@@ -1,15 +1,15 @@
-name: Angular CI
+name: Build and Deploy to BTP Cloud Foundry
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -21,10 +21,18 @@ jobs:
         run: npm install
 
       - name: Build Angular app
-        run: npx ng build --configuration production
-      - name: Log in to Cloud Foundry
-        run: |
-            cf login --sso -a https://api.cf.ap21.hana.ondemand.com/ -o "42635b4ctrial" -s dev
+        run: npm run build -- --configuration production
 
-      - name: Deploy to SAP BTP CF
-        run: cf push
+      - name: Install Cloud Foundry CLI
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri "https://packages.cloudfoundry.org/stable?release=windows64" -OutFile "cf.exe"
+          Move-Item cf.exe C:\cf.exe
+          echo "C:\\" | Out-File -Append $env:GITHUB_PATH
+
+      - name: Login and Deploy to BTP
+        run: |
+          cf api  https://api.cf.ap21.hana.ondemand.com/ 
+          cf auth emanaymn207@gmail.com Eman207#234
+          cf target -o 42635b4ctrial -s dev
+          cf push
