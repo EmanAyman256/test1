@@ -22,3 +22,9 @@ jobs:
 
       - name: Build Angular app
         run: npx ng build --configuration production
+      - name: Log in to Cloud Foundry
+        run: |
+            cf login --sso -a https://api.cf.ap21.hana.ondemand.com/ -o "42635b4ctrial" -s dev
+
+      - name: Deploy to SAP BTP CF
+        run: cf push

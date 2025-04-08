@@ -1,0 +1,7 @@
+applications:
+- name: test-app
+  instances: 1
+  memory: 1G
+  buildpacks:
+    - staticfile_buildpack
+  path: /dist/leave-app  
