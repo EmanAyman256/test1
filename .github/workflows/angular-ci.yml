@@ -25,9 +25,12 @@ jobs:
 
       - name: Install Cloud Foundry CLI
         run: |
+          mkdir -p $HOME/bin
           curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8" -o cf.tgz
-          tar -xvzf cf.tgz
-          sudo mv cf /usr/local/bin
+          tar -xvzf cf.tgz -C $HOME/bin
+          echo "$HOME/bin" >> $GITHUB_PATH
+          chmod +x $HOME/bin/cf
+          $HOME/bin/cf version
 
       - name: Login and Deploy to BTP
         env:
