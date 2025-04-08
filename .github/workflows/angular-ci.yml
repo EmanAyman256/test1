@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # ✅ Use Linux for cf CLI compatibility
 
     steps:
       - name: Checkout repo
@@ -24,15 +24,20 @@ jobs:
         run: npm run build -- --configuration production
 
       - name: Install Cloud Foundry CLI
-        shell: powershell
         run: |
-          Invoke-WebRequest -Uri "https://packages.cloudfoundry.org/stable?release=windows64" -OutFile "cf.exe"
-          Move-Item cf.exe C:\cf.exe
-          echo "C:\\" | Out-File -Append $env:GITHUB_PATH
+          curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8" -o cf.tgz
+          tar -xvzf cf.tgz
+          sudo mv cf /usr/local/bin
 
       - name: Login and Deploy to BTP
+        env:
+          CF_API: https://api.cf.ap21.hana.ondemand.com/ 
+          CF_USERNAME: emanaymn207@gmail.com
+          CF_PASSWORD: Eman207#234
+          CF_ORG: 42635b4ctrial 
+          CF_SPACE: dev
         run: |
-          cf api  https://api.cf.ap21.hana.ondemand.com/ 
-          cf auth emanaymn207@gmail.com Eman207#234
-          cf target -o 42635b4ctrial -s dev
+          cf api $CF_API
+          cf auth $CF_USERNAME $CF_PASSWORD
+          cf target -o $CF_ORG -s $CF_SPACE
           cf push

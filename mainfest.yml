@@ -4,4 +4,4 @@ applications:
   memory: 1G
   buildpacks:
     - staticfile_buildpack
-  path: /dist/leave-app  
+  path: /dist/test1
